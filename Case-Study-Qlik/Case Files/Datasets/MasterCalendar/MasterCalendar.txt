@@ -1,0 +1,18 @@
+LOAD	
+OrderDate,
+Week(OrderDate) as Week,
+Year(OrderDate) as Year,
+Month(OrderDate) as Month,
+Day(OrderDate) as Day,
+WeekDay(OrderDate) as WeekDay,
+Dual('Q' & Ceil(Month(OrderDate) / 3), Ceil(Month(OrderDate / 3))) as Quarter, // new for better sorting
+Date(MonthStart(OrderDate),'MMM-YYYY') as MonthYear,
+Week(OrderDate) &'-'& If(Week(OrderDate)=1 AND Month(OrderDate)=12,Year(OrderDate)+1, If(Match(Week(OrderDate), 52, 53) AND 
+Month(OrderDate)=1, Year(OrderDate)-1, Year(OrderDate))) as WeekYear,
+InYearToDate(OrderDate, $(vToday), 0) * -1 as CYTDFlag,
+InYearToDate(OrderDate, $(vToday), -1) * -1 as LYTDFlag,
+If(DayNumberOfYear(OrderDate) <= DayNumberOfYear($(vToday)), 1, 0 ) as IsInYTD,
+If(DayNumberOfQuarter(OrderDate) <= DayNumberOfQuarter($(vToday)), 1, 0) as IsInQTD,
+If(Day(OrderDate) <= Day($(vToday)), 1, 0) as IsInMTD,
+If(Month(OrderDate) = Month($(vToday)), 1, 0) as IsCurrentMonth,
+If(Month(AddMonths(OrderDate,1)) = Month($(vToday)), 1, 0) as IsLastMonth;
